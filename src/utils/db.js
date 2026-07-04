@@ -27,11 +27,10 @@ export const toggleSaved = (debate) => {
 const isNative =
   typeof window !== "undefined" && !!window.Capacitor?.isNativePlatform?.();
 
-const getRssUrl = (path) => {
-  if (isNative) return `https://news.google.com/rss${path}`;
-  if (import.meta.env.DEV) return `/rss-dev${path}`;
-  return `/api/rss?path=${encodeURIComponent(path)}`;
-};
+const getRssUrl = (path) =>
+  isNative
+    ? `https://news.google.com/rss${path}`
+    : `/rss-dev${path}`;
 
 const clean = (str) =>
   (str || "")
