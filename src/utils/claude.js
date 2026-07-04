@@ -1,23 +1,15 @@
 const MODEL = "claude-haiku-4-5-20251001";
 const ENDPOINT = "https://api.anthropic.com/v1/messages";
-const JINA_PREFIX = "https://r.jina.ai/";
 
 export async function summarizeArticle(link, apiKey) {
   if (!apiKey || !link) return { error: "링크 또는 API 키가 없습니다." };
   try {
-    const jinaRes = await fetch(`${JINA_PREFIX}${link}`);
-    if (!jinaRes.ok) {
-      if (jinaRes.status === 451) throw new Error("이 언론사는 외부 접근을 차단하여 요약할 수 없습니다.");
-      if (jinaRes.status === 403) throw new Error("이 기사는 접근이 제한되어 요약할 수 없습니다.");
-      if (jinaRes.status === 404) throw new Error("기사를 찾을 수 없습니다.");
-      throw new Error("기사 원문을 가져오지 못했습니다. (오류 " + jinaRes.status + ")");
-    }
-    const articleText = await jinaRes.text();
-    if (articleText.length < 100) throw new Error("기사 내용을 가져오지 못했습니다.");
-    // Markdown Content: 이후 본문만 추출
-    const mdIdx = articleText.indexOf("Markdown Content:");
-    const bodyOnly = mdIdx >= 0 ? articleText.slice(mdIdx + 17).trim() : articleText;
-    if (bodyOnly.length < 300) throw new Error("이 기사는 원문 접근이 제한되어 요약할 수 없습니다.");
+    // Vercel 서버리스 함수로 기사 본문 가져오기
+    const proxyRes = await fetch(`/api/fetch-article?url=${encodeURIComponent(link)}`);
+    const proxyData = await proxyRes.json();
+    if (!proxyRes.ok) throw new Error(proxyData.error || "기사를 가져오지 못했습니다.");
+    const bodyOnly = proxyData.text || "";
+    if (bodyOnly.length < 200) throw new Error("이 기사는 본문을 추출할 수 없습니다.");
 
     const res = await fetch(ENDPOINT, {
       method: "POST",
@@ -32,7 +24,7 @@ export async function summarizeArticle(link, apiKey) {
         max_tokens: 512,
         messages: [{
           role: "user",
-          content: `다음 기사를 원문에 충실하게 요약해 주세요. 기사에 있는 내용만 사용하고, 없는 내용은 절대 추가하지 마세요.\n\n${articleText.slice(0, 3000)}`,
+          content: `다음 기사를 원문에 충실하게 요약해 주세요. 기사에 있는 내용만 사용하고, 없는 내용은 절대 추가하지 마세요.\n\n${bodyOnly.slice(0, 3000)}`,
         }],
       }),
     });
