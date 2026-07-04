@@ -1,0 +1,10 @@
+{
+  "appId": "com.talkspark.app",
+  "appName": "TalkSpark",
+  "webDir": "dist",
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

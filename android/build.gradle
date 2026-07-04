@@ -1,0 +1,420 @@
+// Top-level build file for the Android project
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
+// Project-wide variables
+apply from: "variables.gradle"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// Clean task uses built‑in Gradle clean (no explicit deletion)
+// clean task removed (built‑in Gradle clean task is used)
+// delete rootProject.buildDir   // (commented out)
+
+// Java 17 compatibility for all subprojects
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+        }
+        project.tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
+
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
+// Project-wide variables
+apply from: "variables.gradle"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// Clean task uses built‑in Gradle clean (no explicit deletion)
+// clean task removed (built‑in Gradle clean task is used)
+// delete rootProject.buildDir   // (commented out)
+
+// Java 17 compatibility for all subprojects
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+        }
+        project.tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
+
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
+// Project-wide variables
+apply from: "variables.gradle"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// -----------------------------------------------------
+// Clean task uses built‑in Gradle clean (no explicit deletion)
+// -----------------------------------------------------
+// clean task removed (built‑in Gradle clean task is used)
+// delete rootProject.buildDir   // (commented out)
+
+// -----------------------------------------------------
+// Java 17 compatibility for all subprojects
+// -----------------------------------------------------
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+        }
+        project.tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
+
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
+// Project-wide variables
+apply from: "variables.gradle"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// -----------------------------------------------------
+// clean task uses built‑in Gradle clean
+// (rootProject.buildDir deletion is omitted)
+// -----------------------------------------------------
+// clean task removed (built‑in Gradle clean task is used)
+// delete rootProject.buildDir   // (commented out)
+
+// -----------------------------------------------------
+// Java 17 compatibility for all subprojects
+// -----------------------------------------------------
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+        }
+        project.tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
+
+// -----------------------------------------------------
+// Gradle 설정
+// -----------------------------------------------------
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
+// 프로젝트 전역 변수
+apply from: "variables.gradle"
+
+// 모든 모듈에 공통 저장소 정의
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// -----------------------------------------------------
+// clean 태스크는 기본 Gradle clean을 사용합니다.
+// (삭제된 rootProject.buildDir 라인은 주석 처리로 남겨 두었습니다)
+// -----------------------------------------------------
+// clean task removed (built‑in Gradle clean task is used)
+// delete rootProject.buildDir   // (주석 처리)
+
+// -----------------------------------------------------
+// Java 17 호환성 설정 (모든 서브프로젝트)
+// -----------------------------------------------------
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+        }
+        // JavaCompile 작업에 동일 설정 적용
+        project.tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
+
+
+// -----------------------------------------------------
+// Gradle 설정
+// -----------------------------------------------------
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
+// 프로젝트 전역 변수
+apply from: "variables.gradle"
+
+// 모든 모듈에 공통 저장소 정의
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// -----------------------------------------------------
+// clean 태스크는 기본 Gradle clean을 사용합니다.
+// (삭제된 rootProject.buildDir 라인은 주석 처리로 남겨 두었습니다)
+// -----------------------------------------------------
+// clean task removed (built‑in Gradle clean task is used)
+// delete rootProject.buildDir   // (주석 처리)
+
+// -----------------------------------------------------
+// Java 17 호환성 설정 (모든 서브프로젝트)
+// -----------------------------------------------------
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+        }
+        // JavaCompile 작업에 동일 설정 적용
+        project.tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
+
+
+// -----------------------------------------------------
+// Gradle 설정
+// -----------------------------------------------------
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
+// 프로젝트 전역 변수
+apply from: "variables.gradle"
+
+// 모든 모듈에 공통 저장소 정의
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// -----------------------------------------------------
+// clean 태스크는 기본 Gradle clean을 사용합니다.
+// (삭제된 rootProject.buildDir 라인은 주석 처리로 남겨 두었습니다)
+// -----------------------------------------------------
+// clean task removed (built‑in Gradle clean task is used)
+// delete rootProject.buildDir   // (주석 처리)
+
+// -----------------------------------------------------
+// Java 17 호환성 설정 (모든 서브프로젝트)
+// -----------------------------------------------------
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+        }
+        // JavaCompile 작업에 동일 설정 적용
+        project.tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
+
+
+// -----------------------------------------------------
+// Gradle 설정
+// -----------------------------------------------------
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
+// 프로젝트 전역 변수
+apply from: "variables.gradle"
+
+// 모든 모듈에 공통 저장소 정의
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// -----------------------------------------------------
+// clean 태스크는 기본 Gradle clean을 사용합니다.
+// (삭제된 rootProject.buildDir 라인은 주석 처리로 남겨 두었습니다)
+// -----------------------------------------------------
+ // clean task removed (built‑in Gradle clean task is used)
+ // delete rootProject.buildDir   // (주석 처리)
+
+// -----------------------------------------------------
+// Java 17 호환성 설정 (모든 서브프로젝트)
+// -----------------------------------------------------
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+        }
+        // JavaCompile 작업에 동일 설정 적용
+        project.tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
+
+
+// -----------------------------------------------------
+// Gradle 설정
+// -----------------------------------------------------
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
+// 프로젝트 전역 변수
+apply from: "variables.gradle"
+
+// 모든 모듈에 공통 저장소 정의
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// -----------------------------------------------------
+// clean 태스크는 기본 Gradle clean을 사용합니다.
+// (삭제된 rootProject.buildDir 라인은 주석 처리로 남겨 두었습니다)
+// -----------------------------------------------------
+// clean task removed (built‑in Gradle clean task is used)
+// delete rootProject.buildDir   // (주석 처리)
+
+// -----------------------------------------------------
+// Java 11 compatibility block removed; using Java 17 settings above

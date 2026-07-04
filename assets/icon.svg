@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1040"/>
+      <stop offset="100%" stop-color="#0d1a2e"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4facfe"/>
+      <stop offset="100%" stop-color="#00f2fe"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+
+  <!-- 말풍선 테두리 + 반투명 fill -->
+  <rect x="172" y="200" width="680" height="520" rx="120" fill="url(#cyan)" fill-opacity="0.12"/>
+  <rect x="172" y="200" width="680" height="520" rx="120" fill="none" stroke="url(#cyan)" stroke-width="18"/>
+
+  <!-- 말풍선 꼬리 -->
+  <polygon points="260,720 200,840 380,720" fill="url(#cyan)" opacity="0.85"/>
+
+  <!-- 번개 볼트 -->
+  <polygon points="600,248 460,528 534,528 490,776 660,476 582,476 640,248" fill="url(#cyan)"/>
+</svg>
