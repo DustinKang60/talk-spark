@@ -6,7 +6,12 @@ export async function summarizeArticle(link, apiKey) {
   if (!apiKey || !link) return { error: "링크 또는 API 키가 없습니다." };
   try {
     const jinaRes = await fetch(`${JINA_PREFIX}${link}`);
-    if (!jinaRes.ok) throw new Error(`Jina HTTP ${jinaRes.status}`);
+    if (!jinaRes.ok) {
+      if (jinaRes.status === 451) throw new Error("이 언론사는 외부 접근을 차단하여 요약할 수 없습니다.");
+      if (jinaRes.status === 403) throw new Error("이 기사는 접근이 제한되어 요약할 수 없습니다.");
+      if (jinaRes.status === 404) throw new Error("기사를 찾을 수 없습니다.");
+      throw new Error("기사 원문을 가져오지 못했습니다. (오류 " + jinaRes.status + ")");
+    }
     const articleText = await jinaRes.text();
     if (articleText.length < 100) throw new Error("기사 내용을 가져오지 못했습니다.");
     // Markdown Content: 이후 본문만 추출
