@@ -126,16 +126,31 @@ export const removeKeyword = (kw) => {
   return next;
 };
 
+const parseNaverNews = (data, keyword, idPrefix) => {
+  if (!data.items || !data.items.length) return [];
+  return data.items.slice(0, 5).map((item, i) => ({
+    id: `${idPrefix}_${i}`,
+    title: clean(item.title),
+    summary: clean(item.description),
+    link: item.originallink || item.link,
+    pubDate: item.pubDate || "",
+    category: keyword,
+  }));
+};
+
 export const fetchKeywordNews = async () => {
   const keywords = getKeywords();
   if (keywords.length === 0) return [];
+  const baseUrl = isNative
+    ? "https://talk-spark-eta.vercel.app/api/naver-news"
+    : "/api/naver-news";
   const results = await Promise.all(
     keywords.map(async (kw) => {
-      const url = getRssUrl(`/search?q=${encodeURIComponent(kw)}&hl=ko&gl=KR&ceid=KR:ko`);
       try {
-        const res = await fetch(url);
+        const res = await fetch(`${baseUrl}?query=${encodeURIComponent(kw)}`);
         if (!res.ok) return [];
-        return parseRss(await res.text(), kw, `gnews_kw_${kw}`, 3);
+        const data = await res.json();
+        return parseNaverNews(data, kw, `naver_kw_${kw}`);
       } catch { return []; }
     })
   );
