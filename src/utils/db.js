@@ -30,7 +30,7 @@ const isNative =
 const getRssUrl = (path) =>
   isNative
     ? `https://news.google.com/rss${path}`
-    : `/rss-dev${path}`;
+    : `/api/rss?path=${encodeURIComponent(path)}`;
 
 const clean = (str) =>
   (str || "")
