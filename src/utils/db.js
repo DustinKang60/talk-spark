@@ -53,13 +53,11 @@ const parseRss = (xml, category, idPrefix, limit = 10) => {
   const count = Math.min(items.length, limit);
   for (let i = 0; i < count; i++) {
     const item = items[i];
-    const sourceEl = item.getElementsByTagName("source")[0];
-    const articleUrl = sourceEl?.getAttribute("url") || item.getElementsByTagName("link")[0]?.textContent || "";
     result.push({
       id: `${idPrefix}_${i}`,
       title: clean(item.getElementsByTagName("title")[0]?.textContent),
       summary: clean(item.getElementsByTagName("description")[0]?.textContent),
-      link: articleUrl,
+      link: item.getElementsByTagName("link")[0]?.textContent || "",
       pubDate: item.getElementsByTagName("pubDate")[0]?.textContent || "",
       category,
     });
