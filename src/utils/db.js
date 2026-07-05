@@ -147,7 +147,7 @@ export const fetchKeywordNews = async () => {
   const results = await Promise.all(
     keywords.map(async (kw) => {
       try {
-        const res = await fetch(`${baseUrl}?query=${encodeURIComponent(kw)}`);
+        const res = await fetch(`${baseUrl}?query=${encodeURIComponent(`"${kw}")}`);
         if (!res.ok) return [];
         const data = await res.json();
         return parseNaverNews(data, kw, `naver_kw_${kw}`);
