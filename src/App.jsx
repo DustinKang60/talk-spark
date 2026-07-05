@@ -117,6 +117,7 @@ export default function App() {
       {showHeader && (
         <header className="app-header">
           <div>
+            <div style={{ fontSize: "9px", color: "rgba(255,255,255,0.3)", letterSpacing: "0.08em", marginBottom: "2px" }}>작은앱공방</div>
             <h1 className="app-title">{title.main}</h1>
             <div className="app-subtitle">{title.sub}</div>
           </div>
