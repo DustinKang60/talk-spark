@@ -108,6 +108,9 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
       else setError(false);
       setCache((prev) => ({ ...prev, [tabId]: data }));
       setLoading(false);
+    }).catch(() => {
+      setError(true);
+      setLoading(false);
     });
   };
 
