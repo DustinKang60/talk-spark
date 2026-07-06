@@ -1,4 +1,7 @@
 export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET");
+
   const { query } = req.query;
   if (!query) {
     res.status(400).json({ error: "query required" });
