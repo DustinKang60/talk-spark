@@ -126,30 +126,11 @@ export const removeKeyword = (kw) => {
   return next;
 };
 
-const SEEN_KEY = "talkspark_seen_articles";
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-
-const getSeenArticles = () => {
-  try {
-    return JSON.parse(localStorage.getItem(SEEN_KEY) || "{}");
-  } catch { return {}; }
-};
-
-const markArticlesSeen = (links) => {
-  const seen = getSeenArticles();
-  const now = Date.now();
-  links.forEach((link) => { seen[link] = now; });
-  // 7일 지난 항목 정리
-  Object.keys(seen).forEach((k) => {
-    if (now - seen[k] > 7 * 24 * 60 * 60 * 1000) delete seen[k];
-  });
-  localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
-};
 
 const parseNaverNews = (data, keyword, idPrefix) => {
   if (!data.items || !data.items.length) return [];
   const now = Date.now();
-  const seen = getSeenArticles();
   return data.items
     .map((item, i) => ({
       id: `${idPrefix}_${i}`,
@@ -161,10 +142,7 @@ const parseNaverNews = (data, keyword, idPrefix) => {
     }))
     .filter((article) => {
       if (!article.pubDate) return false;
-      const age = now - new Date(article.pubDate).getTime();
-      if (age > THREE_DAYS_MS) return false;
-      if (seen[article.link]) return false;
-      return true;
+      return now - new Date(article.pubDate).getTime() <= THREE_DAYS_MS;
     });
 };
 
@@ -184,9 +162,7 @@ export const fetchKeywordNews = async () => {
       } catch { return []; }
     })
   );
-  const articles = results.flat();
-  markArticlesSeen(articles.map((a) => a.link));
-  return articles;
+  return results.flat();
 };
 
 export const fetchWorldNews = async () => {
