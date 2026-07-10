@@ -33,6 +33,7 @@ export default function TopicDetail({ topic, onBack }) {
     if (topic.counterOpinion) {
       text += `\n⚖️ 토론을 위한 반대 관점\n${topic.counterOpinion}\n`;
     }
+    text += `\n— 작은앱공방 TalkSpark`;
     return text;
   };
 
