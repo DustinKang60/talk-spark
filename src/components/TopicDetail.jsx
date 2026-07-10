@@ -23,12 +23,29 @@ export default function TopicDetail({ topic, onBack }) {
     );
   };
 
-  const handleShare = () => {
-    const text = `[TalkSpark 논쟁거리]\n"${topic.title}"\n\n${topic.starter}`;
-    navigator.clipboard?.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+  const buildShareText = () => {
+    let text = `[TalkSpark 논쟁거리]\n\n📌 ${topic.title}\n\n${topic.description}\n`;
+    text += `\n💬 대화 시작 질문\n"${topic.starter}"\n`;
+    if (topic.followups?.length > 0) {
+      text += `\n🎙 더 깊은 대화 (꼬리 질문)\n`;
+      topic.followups.forEach((q, i) => { text += `${i + 1}. ${q}\n`; });
+    }
+    if (topic.counterOpinion) {
+      text += `\n⚖️ 토론을 위한 반대 관점\n${topic.counterOpinion}\n`;
+    }
+    return text;
+  };
+
+  const handleShare = async () => {
+    const text = buildShareText();
+    try {
+      await navigator.share({ title: topic.title, text });
+    } catch {
+      navigator.clipboard?.writeText(text).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
   };
 
   if (!topic) return null;
@@ -155,7 +172,7 @@ export default function TopicDetail({ topic, onBack }) {
               <svg style={{ width: "18px", height: "18px" }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
-              대화 주제 복사
+              카카오톡으로 보내기
             </>
           )}
         </button>
