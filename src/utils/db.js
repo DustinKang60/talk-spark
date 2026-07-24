@@ -90,10 +90,7 @@ export const fetchAiNews = async () => {
 };
 
 // 키워드 관리
-const DEFAULT_KEYWORDS = [
-  "KCB", "코리아크레딧뷰로", "신용평점", "신용점수", "신용평가",
-  "신용정보원", "금융감독원 신용", "마이데이터", "신용회복위원회", "올크레딧", "오케이네임"
-];
+const DEFAULT_KEYWORDS = [];
 
 export const getKeywords = () => {
   try {
