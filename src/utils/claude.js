@@ -1,3 +1,5 @@
+import { CLIENT_TOKEN } from "./apiToken";
+
 const MODEL = "claude-haiku-4-5-20251001";
 const ENDPOINT = "https://api.anthropic.com/v1/messages";
 
@@ -5,7 +7,9 @@ export async function summarizeArticle(link, apiKey) {
   if (!apiKey || !link) return { error: "링크 또는 API 키가 없습니다." };
   try {
     // Vercel 서버리스 함수로 기사 본문 가져오기
-    const proxyRes = await fetch(`/api/fetch-article?url=${encodeURIComponent(link)}`);
+    const proxyRes = await fetch(`/api/fetch-article?url=${encodeURIComponent(link)}`, {
+      headers: { "X-TalkSpark-Client": CLIENT_TOKEN },
+    });
     const proxyData = await proxyRes.json();
     if (!proxyRes.ok) throw new Error(proxyData.error || "기사를 가져오지 못했습니다.");
     const bodyOnly = proxyData.text || "";

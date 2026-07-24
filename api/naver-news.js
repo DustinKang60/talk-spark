@@ -1,6 +1,10 @@
+import { applyCors, verifyClient, rateLimited } from "./_shared.js";
+
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET");
+  applyCors(req, res);
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (!verifyClient(req, res)) return;
+  if (rateLimited(req, res, { windowMs: 60_000, max: 60 })) return;
 
   const { query } = req.query;
   if (!query) {

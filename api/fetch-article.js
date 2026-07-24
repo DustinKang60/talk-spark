@@ -1,10 +1,15 @@
+import { isIP } from "node:net";
+import { applyCors, verifyClient, rateLimited } from "./_shared.js";
+
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  applyCors(req, res);
   if (req.method === "OPTIONS") return res.status(200).end();
+  if (!verifyClient(req, res)) return;
+  if (rateLimited(req, res, { windowMs: 60_000, max: 20 })) return;
 
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: "url 파라미터가 없습니다." });
+  if (isBlockedUrl(url)) return res.status(400).json({ error: "허용되지 않는 주소입니다." });
 
   try {
     const response = await fetch(url, {
@@ -37,6 +42,32 @@ export default async function handler(req, res) {
   } catch (e) {
     return res.status(500).json({ error: "기사를 가져오는 중 오류가 발생했습니다." });
   }
+}
+
+// 내부망·클라우드 메타데이터 등으로의 SSRF를 막기 위한 최소 검증
+function isBlockedUrl(rawUrl) {
+  let u;
+  try {
+    u = new URL(rawUrl);
+  } catch {
+    return true;
+  }
+  if (u.protocol !== "http:" && u.protocol !== "https:") return true;
+
+  const host = u.hostname.toLowerCase();
+  if (host === "localhost" || host === "0.0.0.0" || host.endsWith(".local")) return true;
+
+  if (isIP(host) === 4) {
+    const [a, b] = host.split(".").map(Number);
+    if (a === 127) return true; // loopback
+    if (a === 10) return true; // 10.0.0.0/8
+    if (a === 172 && b >= 16 && b <= 31) return true; // 172.16.0.0/12
+    if (a === 192 && b === 168) return true; // 192.168.0.0/16
+    if (a === 169 && b === 254) return true; // link-local (클라우드 메타데이터 포함)
+  } else if (isIP(host) === 6) {
+    if (host === "::1" || host.startsWith("fe80:") || host.startsWith("fc") || host.startsWith("fd")) return true;
+  }
+  return false;
 }
 
 function extractText(html) {

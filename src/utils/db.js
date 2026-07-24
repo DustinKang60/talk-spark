@@ -1,3 +1,7 @@
+import { CLIENT_TOKEN } from "./apiToken";
+
+const AUTH_HEADERS = { "X-TalkSpark-Client": CLIENT_TOKEN };
+
 // 즐겨찾기(저장된 논쟁거리) 관리 — debate 객체 전체를 저장
 export const getSavedDebates = () => {
   try {
@@ -68,7 +72,7 @@ const parseRss = (xml, category, idPrefix, limit = 10) => {
 export const fetchTopNews = async () => {
   const url = getRssUrl("?hl=ko&gl=KR&ceid=KR:ko");
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: AUTH_HEADERS });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return parseRss(await res.text(), "헤드라인", "gnews_top");
   } catch (e) {
@@ -80,7 +84,7 @@ export const fetchTopNews = async () => {
 export const fetchAiNews = async () => {
   const url = getRssUrl("/search?q=인공지능+AI&hl=ko&gl=KR&ceid=KR:ko");
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: AUTH_HEADERS });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return parseRss(await res.text(), "AI·기술", "gnews_ai");
   } catch (e) {
@@ -152,7 +156,7 @@ export const fetchKeywordNews = async () => {
   const results = await Promise.all(
     keywords.map(async (kw) => {
       try {
-        const res = await fetch(`${baseUrl}?query=${encodeURIComponent('"' + kw + '"')}`);
+        const res = await fetch(`${baseUrl}?query=${encodeURIComponent('"' + kw + '"')}`, { headers: AUTH_HEADERS });
         if (!res.ok) return [];
         const data = await res.json();
         return parseNaverNews(data, kw, `naver_kw_${kw}`);
@@ -165,7 +169,7 @@ export const fetchKeywordNews = async () => {
 export const fetchWorldNews = async () => {
   const url = getRssUrl("/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR:ko");
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: AUTH_HEADERS });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return parseRss(await res.text(), "세계", "gnews_world");
   } catch (e) {

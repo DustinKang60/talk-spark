@@ -30,3 +30,5 @@ ios/App/CapApp-SPM/.build
 *.njsproj
 *.sln
 *.sw?
+.vercel
+.env*
