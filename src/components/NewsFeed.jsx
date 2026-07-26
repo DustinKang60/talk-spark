@@ -163,8 +163,8 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      {/* 탭 */}
-      <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+      {/* 탭 — 기사를 스크롤해도 상단에 고정된다 (.feed-tabs) */}
+      <div className="feed-tabs">
         {[...STATIC_TABS, { id: "keyword", label: "키워드" }].map((tab) => (
           <button
             key={tab.id}

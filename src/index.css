@@ -198,6 +198,20 @@ body::after {
   position: relative;
 }
 
+/* 뉴스 탭 줄(헤드라인·AI·세계·키워드) — 기사를 스크롤해도 위에 남는다.
+   .app-content가 스크롤 컨테이너라 sticky의 기준이 된다.
+   음수 마진으로 컨테이너의 좌우·상단 padding까지 덮어야 기사가 옆으로 비쳐 지나가지 않는다. */
+.feed-tabs {
+  position: sticky;
+  top: -20px;              /* .app-content의 padding-top(20px)만큼 당겨 실제 상단에 붙게 */
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+  margin: -20px -24px 16px;
+  padding: 20px 24px 12px;
+  background: var(--bg-secondary);
+}
+
 /* 스크롤바 숨기기 */
 .app-content::-webkit-scrollbar {
   display: none;
