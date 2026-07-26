@@ -2,6 +2,15 @@ import { CLIENT_TOKEN } from "./apiToken";
 
 const AUTH_HEADERS = { "X-TalkSpark-Client": CLIENT_TOKEN };
 
+// 서버가 403을 주면 기기에 남은 '옛 버전'이 인증 토큰을 안 보내고 있다는 뜻이다.
+// 화면에서 "네트워크 문제"가 아니라 "앱이 오래됐다"로 정확히 안내하려고 따로 구분한다.
+export class StaleClientError extends Error {
+  constructor() {
+    super("STALE_CLIENT");
+    this.name = "StaleClientError";
+  }
+}
+
 // 즐겨찾기(저장된 논쟁거리) 관리 — debate 객체 전체를 저장
 export const getSavedDebates = () => {
   try {
@@ -73,9 +82,11 @@ export const fetchTopNews = async () => {
   const url = getRssUrl("?hl=ko&gl=KR&ceid=KR:ko");
   try {
     const res = await fetch(url, { headers: AUTH_HEADERS });
+    if (res.status === 403) throw new StaleClientError();
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return parseRss(await res.text(), "헤드라인", "gnews_top");
   } catch (e) {
+    if (e instanceof StaleClientError) throw e;   // 화면에서 따로 안내
     console.error("뉴스 로드 실패:", e);
     return [];
   }
@@ -85,9 +96,11 @@ export const fetchAiNews = async () => {
   const url = getRssUrl("/search?q=인공지능+AI&hl=ko&gl=KR&ceid=KR:ko");
   try {
     const res = await fetch(url, { headers: AUTH_HEADERS });
+    if (res.status === 403) throw new StaleClientError();
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return parseRss(await res.text(), "AI·기술", "gnews_ai");
   } catch (e) {
+    if (e instanceof StaleClientError) throw e;
     console.error("AI 뉴스 로드 실패:", e);
     return [];
   }
@@ -153,16 +166,19 @@ export const fetchKeywordNews = async () => {
   const baseUrl = isNative
     ? "https://talk-spark-eta.vercel.app/api/naver-news"
     : "/api/naver-news";
+  let sawStaleClient = false;
   const results = await Promise.all(
     keywords.map(async (kw) => {
       try {
         const res = await fetch(`${baseUrl}?query=${encodeURIComponent('"' + kw + '"')}`, { headers: AUTH_HEADERS });
+        if (res.status === 403) { sawStaleClient = true; return []; }
         if (!res.ok) return [];
         const data = await res.json();
         return parseNaverNews(data, kw, `naver_kw_${kw}`);
       } catch { return []; }
     })
   );
+  if (sawStaleClient) throw new StaleClientError();
   return results.flat();
 };
 
@@ -170,9 +186,11 @@ export const fetchWorldNews = async () => {
   const url = getRssUrl("/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR:ko");
   try {
     const res = await fetch(url, { headers: AUTH_HEADERS });
+    if (res.status === 403) throw new StaleClientError();
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return parseRss(await res.text(), "세계", "gnews_world");
   } catch (e) {
+    if (e instanceof StaleClientError) throw e;
     console.error("세계 뉴스 로드 실패:", e);
     return [];
   }

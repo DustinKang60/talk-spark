@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchTopNews, fetchAiNews, fetchWorldNews, fetchKeywordNews, getKeywords, addKeyword, removeKeyword } from "../utils/db";
+import { fetchTopNews, fetchAiNews, fetchWorldNews, fetchKeywordNews, getKeywords, addKeyword, removeKeyword, StaleClientError } from "../utils/db";
 import { summarizeArticle } from "../utils/claude";
 
 const STATIC_TABS = [
@@ -92,7 +92,7 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
   const [activeTab, setActiveTab] = useState("headline");
   const [cache, setCache] = useState({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);   // null | "load"(못 불러옴) | "stale"(기기에 남은 옛 버전)
   const [showManager, setShowManager] = useState(false);
   const [keywords, setKeywords] = useState(getKeywords());
   const [summaries, setSummaries] = useState({});   // newsId → { text, loading, error }
@@ -100,18 +100,34 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
 
   const loadTab = (tabId) => {
     setLoading(true);
-    setError(false);
+    setError(null);
     const staticTab = STATIC_TABS.find((t) => t.id === tabId);
     const fetcher = staticTab ? staticTab.fetch : fetchKeywordNews;
     fetcher().then((data) => {
-      if (data.length === 0) setError(true);
-      else setError(false);
+      setError(data.length === 0 ? "load" : null);
       setCache((prev) => ({ ...prev, [tabId]: data }));
       setLoading(false);
-    }).catch(() => {
-      setError(true);
+    }).catch((e) => {
+      // 403은 기기에 남은 옛 코드가 원인 → 네트워크 탓으로 안내하면 사용자가 헤맨다
+      setError(e instanceof StaleClientError ? "stale" : "load");
       setLoading(false);
     });
+  };
+
+  // 옛 버전에 갇힌 기기를 되살린다. 캐시된 코드만 지우므로
+  // 보관함·키워드·API 키(localStorage)는 그대로 남는다.
+  const handleUpdateApp = async () => {
+    try {
+      if (navigator.serviceWorker) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map((r) => r.unregister()));
+      }
+      if (window.caches) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      }
+    } catch { /* 지우지 못해도 새로고침은 시도한다 */ }
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -202,6 +218,19 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
                 background: "var(--accent-cyan)", color: "#0d1a2e", border: "none",
                 fontSize: "13px", fontWeight: "700", cursor: "pointer",
               }}>키워드 추가</button>
+            </>
+          ) : error === "stale" ? (
+            <>
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <div className="empty-title">앱이 오래된 버전이에요</div>
+              <p className="empty-desc">최신 버전으로 바꾸면 바로 해결됩니다.<br />저장한 논쟁거리와 키워드는 그대로 남아요.</p>
+              <button onClick={handleUpdateApp} style={{
+                marginTop: "12px", padding: "10px 24px", borderRadius: "20px",
+                background: "var(--accent-cyan)", color: "#0d1a2e", border: "none",
+                fontSize: "13px", fontWeight: "700", cursor: "pointer",
+              }}>최신 버전으로 업데이트</button>
             </>
           ) : (
             <>
