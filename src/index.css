@@ -203,14 +203,20 @@ body::after {
    음수 마진으로 컨테이너의 좌우·상단 padding까지 덮어야 기사가 옆으로 비쳐 지나가지 않는다. */
 .feed-tabs {
   position: sticky;
-  top: -20px;              /* .app-content의 padding-top(20px)만큼 당겨 실제 상단에 붙게 */
+  top: -20px;
   z-index: 20;
   display: flex;
   gap: 8px;
   margin: -20px -24px 16px;
   padding: 20px 24px 12px;
   background: var(--bg-secondary);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.feed-tabs::-webkit-scrollbar { display: none; }
+.feed-tabs button { flex-shrink: 0; white-space: nowrap; }
 
 /* 스크롤바 숨기기 */
 .app-content::-webkit-scrollbar {
