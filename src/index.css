@@ -218,7 +218,7 @@ body::after {
 .feed-tabs::-webkit-scrollbar { display: none; }
 .feed-tabs button { flex-shrink: 0; white-space: nowrap; }
 .feed-tabs button:first-child { margin-left: 24px; }
-.feed-tabs button:last-child { margin-right: 24px; }
+.feed-tabs button:last-child { margin-right: 36px; }
 
 /* 스크롤바 숨기기 */
 .app-content::-webkit-scrollbar {
