@@ -92,6 +92,32 @@ export const fetchTopNews = async () => {
   }
 };
 
+export const fetchEntertainmentNews = async () => {
+  const queries = ["연예", "문화", "영화", "드라마", "음악"];
+  const baseUrl = isNative
+    ? "https://talk-spark-eta.vercel.app/api/naver-news"
+    : "/api/naver-news";
+  const results = await Promise.all(
+    queries.map(async (q) => {
+      try {
+        const res = await fetch(`${baseUrl}?query=${encodeURIComponent(q)}`);
+        if (!res.ok) return [];
+        const data = await res.json();
+        if (!data.items) return [];
+        return data.items.slice(0, 2).map((item, i) => ({
+          id: `naver_ent_${q}_${i}`,
+          title: clean(item.title),
+          summary: clean(item.description),
+          link: item.originallink || item.link,
+          pubDate: item.pubDate || "",
+          category: "연예·문화",
+        }));
+      } catch { return []; }
+    })
+  );
+  return results.flat();
+};
+
 export const fetchAiNews = async () => {
   const url = getRssUrl("/search?q=인공지능+AI&hl=ko&gl=KR&ceid=KR:ko");
   try {

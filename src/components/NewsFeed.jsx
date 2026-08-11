@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { fetchTopNews, fetchAiNews, fetchWorldNews, fetchKeywordNews, getKeywords, addKeyword, removeKeyword, StaleClientError } from "../utils/db";
+import { fetchTopNews, fetchAiNews, fetchWorldNews, fetchKeywordNews, fetchEntertainmentNews, getKeywords, addKeyword, removeKeyword, StaleClientError } from "../utils/db";
 import { summarizeArticle } from "../utils/claude";
 
 const STATIC_TABS = [
   { id: "headline", label: "헤드라인", fetch: fetchTopNews },
+  { id: "entertainment", label: "연예·문화", fetch: fetchEntertainmentNews },
   { id: "ai", label: "AI·기술", fetch: fetchAiNews },
   { id: "world", label: "세계", fetch: fetchWorldNews },
 ];
