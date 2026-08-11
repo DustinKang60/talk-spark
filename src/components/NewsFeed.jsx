@@ -90,7 +90,9 @@ function KeywordManager({ onClose, onChanged }) {
 }
 
 export default function NewsFeed({ onSelectNews, apiKey }) {
-  const [activeTab, setActiveTab] = useState("headline");
+  const [activeTab, setActiveTab] = useState(
+    () => sessionStorage.getItem("ts_active_tab") || "headline"
+  );
   const [cache, setCache] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);   // null | "load"(못 불러옴) | "stale"(기기에 남은 옛 버전)
@@ -185,7 +187,7 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
         {[...STATIC_TABS, { id: "keyword", label: "키워드" }].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => { sessionStorage.setItem("ts_active_tab", tab.id); setActiveTab(tab.id); }}
             style={{
               padding: "6px 16px", borderRadius: "20px", border: "none",
               fontSize: "13px", fontWeight: activeTab === tab.id ? "600" : "400",
