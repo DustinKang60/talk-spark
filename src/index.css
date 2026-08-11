@@ -208,7 +208,7 @@ body::after {
   display: flex;
   gap: 8px;
   margin: -20px -24px 16px;
-  padding: 20px 24px 12px;
+  padding: 20px 0 12px;
   background: var(--bg-secondary);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -217,6 +217,8 @@ body::after {
 }
 .feed-tabs::-webkit-scrollbar { display: none; }
 .feed-tabs button { flex-shrink: 0; white-space: nowrap; }
+.feed-tabs button:first-child { margin-left: 24px; }
+.feed-tabs button:last-child { margin-right: 24px; }
 
 /* 스크롤바 숨기기 */
 .app-content::-webkit-scrollbar {
