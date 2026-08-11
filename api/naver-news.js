@@ -26,6 +26,7 @@ export default async function handler(req, res) {
       headers: {
         "X-Naver-Client-Id": clientId,
         "X-Naver-Client-Secret": clientSecret,
+        "Referer": "https://talk-spark-eta.vercel.app",
       },
     });
     const data = await upstream.json();
