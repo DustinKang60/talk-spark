@@ -225,7 +225,9 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
             key={tab.id}
             onClick={() => { sessionStorage.setItem("ts_active_tab", tab.id); setActiveTab(tab.id); }}
             style={{
-              padding: "6px 16px", borderRadius: "20px", border: "none",
+              // 탭 5개 폭이 화면 폭과 정확히 같아져 마지막 탭이 가장자리에 붙었다.
+              // 좌우 padding만 16→12로 줄인다(글자 크기는 유지). 버튼 합 355→315.
+              padding: "6px 12px", borderRadius: "20px", border: "none",
               fontSize: "13px", fontWeight: activeTab === tab.id ? "600" : "400",
               cursor: "pointer",
               background: activeTab === tab.id ? "var(--accent-cyan)" : "var(--card-bg)",

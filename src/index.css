@@ -206,7 +206,7 @@ body::after {
   top: -20px;
   z-index: 20;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin: -20px -24px 16px;
   padding: 20px 0 12px;
   background: var(--bg-secondary);
@@ -218,6 +218,10 @@ body::after {
 .feed-tabs::-webkit-scrollbar { display: none; }
 .feed-tabs button { flex-shrink: 0; white-space: nowrap; }
 .feed-tabs button:first-child { margin-left: 24px; }
+/* 마지막 버튼의 margin-right는 '스크롤해야 닿는' 여백이라, 탭 줄이 화면보다 넓으면
+   스크롤 전에는 눈에 보이지 않는다. 여백을 늘려도 마지막 탭이 가장자리에 붙는 건
+   그대로였다. 탭이 화면에 들어가게 폭 자체를 줄이는 게 해법이고, 이 값은 더 좁은
+   기기에서 스크롤이 생길 때를 위한 것이다. */
 .feed-tabs button:last-child { margin-right: 36px; }
 
 /* 스크롤바 숨기기 */
