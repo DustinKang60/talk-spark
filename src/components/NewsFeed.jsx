@@ -100,6 +100,8 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
   const [keywords, setKeywords] = useState(getKeywords());
   const [summaries, setSummaries] = useState({});   // newsId → { text, loading, error }
   const [copied, setCopied] = useState(null);
+  const [pullY, setPullY] = useState(0);   // pull-to-refresh 당긴 거리
+  const touchStartY = React.useRef(0);
 
   const loadTab = (tabId) => {
     setLoading(true);
@@ -137,6 +139,24 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
     if (cache[activeTab]) return;
     loadTab(activeTab);
   }, [activeTab]);
+
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    if (window.scrollY > 0) return;
+    const dy = e.touches[0].clientY - touchStartY.current;
+    if (dy > 0) setPullY(Math.min(dy, 80));
+  };
+
+  const handleTouchEnd = () => {
+    if (pullY >= 60) {
+      setCache((prev) => ({ ...prev, [activeTab]: undefined }));
+      loadTab(activeTab);
+    }
+    setPullY(0);
+  };
 
   const handleKeywordChanged = () => {
     setKeywords(getKeywords());
@@ -181,7 +201,23 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
   };
 
   return (
-    <div style={{ animation: "fadeIn 0.4s ease" }}>
+    <div
+      style={{ animation: "fadeIn 0.4s ease" }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {pullY > 0 && (
+        <div style={{
+          display: "flex", justifyContent: "center", alignItems: "center",
+          height: `${pullY}px`, transition: "height 0.1s",
+          color: "var(--text-muted)", fontSize: "12px", gap: "6px",
+        }}>
+          {pullY >= 60
+            ? <><div className="spinner" style={{ width: "14px", height: "14px" }} />놓으면 새로고침</>
+            : "↓ 당겨서 새로고침"}
+        </div>
+      )}
       {/* 탭 — 기사를 스크롤해도 상단에 고정된다 (.feed-tabs) */}
       <div className="feed-tabs">
         {[...STATIC_TABS, { id: "keyword", label: "키워드" }].map((tab) => (
