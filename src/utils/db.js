@@ -93,7 +93,7 @@ export const fetchTopNews = async () => {
 };
 
 export const fetchEntertainmentNews = async () => {
-  const queries = ["연예", "문화", "영화", "드라마", "음악"];
+  const queries = ["드라마", "영화", "가수", "탤런트", "배우", "예능"];
   const baseUrl = isNative
     ? "https://talk-spark-eta.vercel.app/api/naver-news"
     : "/api/naver-news";
