@@ -100,7 +100,7 @@ export const fetchEntertainmentNews = async () => {
   const results = await Promise.all(
     queries.map(async (q) => {
       try {
-        const res = await fetch(`${baseUrl}?query=${encodeURIComponent(q)}`);
+        const res = await fetch(`${baseUrl}?query=${encodeURIComponent(q)}`, { headers: AUTH_HEADERS });
         if (!res.ok) return [];
         const data = await res.json();
         if (!data.items) return [];
