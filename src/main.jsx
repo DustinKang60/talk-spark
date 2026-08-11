@@ -12,8 +12,10 @@ registerSW({
   onRegisteredSW(swUrl, registration) {
     if (!registration) return
     // 앱 전환이 잦으면 확인이 너무 잦아지므로 최소 간격을 둔다(최대 시간당 2회).
+    // lastCheck를 Date.now()로 시작하면 앱을 켠 뒤 30분간 확인이 통째로 막혀,
+    // 잠깐 열었다 닫는 사용 패턴에서는 update()가 한 번도 돌지 않는다. 0으로 시작해 첫 확인은 즉시 한다.
     const MIN_INTERVAL = 30 * 60 * 1000
-    let lastCheck = Date.now()
+    let lastCheck = 0
     const checkForUpdate = () => {
       if (!navigator.onLine) return
       if (Date.now() - lastCheck < MIN_INTERVAL) return
