@@ -102,6 +102,7 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
   const [copied, setCopied] = useState(null);
   const [pullY, setPullY] = useState(0);   // pull-to-refresh 당긴 거리
   const touchStartY = React.useRef(0);
+  const pullArmed = React.useRef(false);   // 맨 위에서 시작한 당김만 새로고침으로 친다
 
   const loadTab = (tabId) => {
     setLoading(true);
@@ -140,21 +141,37 @@ export default function NewsFeed({ onSelectNews, apiKey }) {
     loadTab(activeTab);
   }, [activeTab]);
 
+  // 실제로 스크롤되는 것은 .app-content 다(body는 overflow:hidden).
+  // window.scrollY 를 보던 옛 코드는 언제나 0이라 방어가 되지 않았고,
+  // 목록 맨 아래에서 손가락을 아래로 내리면 당김으로 잡혀 새로고침이 걸렸다.
+  // 그래서 맨 밑까지 내려간 뒤 조금만 올리면 첫 기사로 튀어 올랐다.
+  const scrollerOf = (el) => el?.closest(".app-content") ?? null;
+
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
+    const scroller = scrollerOf(e.currentTarget);
+    // 손을 댄 순간 목록이 맨 위에 있을 때만 당김으로 친다.
+    pullArmed.current = !scroller || scroller.scrollTop <= 0;
   };
 
   const handleTouchMove = (e) => {
-    if (window.scrollY > 0) return;
+    if (!pullArmed.current) return;
+    const scroller = scrollerOf(e.currentTarget);
+    if (scroller && scroller.scrollTop > 0) {
+      pullArmed.current = false;
+      setPullY(0);
+      return;
+    }
     const dy = e.touches[0].clientY - touchStartY.current;
     if (dy > 0) setPullY(Math.min(dy, 80));
   };
 
   const handleTouchEnd = () => {
-    if (pullY >= 60) {
+    if (pullArmed.current && pullY >= 60) {
       setCache((prev) => ({ ...prev, [activeTab]: undefined }));
       loadTab(activeTab);
     }
+    pullArmed.current = false;
     setPullY(0);
   };
 
