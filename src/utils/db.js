@@ -1,4 +1,5 @@
 import { CLIENT_TOKEN } from "./apiToken";
+import { refine } from "./newsFilter";
 
 const AUTH_HEADERS = { "X-TalkSpark-Client": CLIENT_TOKEN };
 
@@ -78,7 +79,38 @@ const parseRss = (xml, category, idPrefix, limit = 10) => {
   return result;
 };
 
-export const fetchTopNews = async () => {
+// 네이버 랭킹뉴스 — 사람들이 실제로 많이 본 순서다.
+// 검색 API(sort=date)는 갓 올라온 기사를 시간순으로 줄 뿐이라 관심도와 무관했다.
+const rankUrl = (tab) =>
+  isNative
+    ? `https://talk-spark-eta.vercel.app/api/naver-rank?tab=${tab}`
+    : `/api/naver-rank?tab=${tab}`;
+
+// 랭킹은 네이버 HTML을 파싱해 얻는다. 구조가 바뀌면 서버가 502를 주므로
+// 그때는 기존 방식(fallback)으로 조용히 되돌아간다. 앱이 멈추지는 않게.
+const fetchRanked = async (tab, category, idPrefix, fallback) => {
+  try {
+    const res = await fetch(rankUrl(tab), { headers: AUTH_HEADERS });
+    if (res.status === 403) throw new StaleClientError();
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data.items?.length) throw new Error("빈 목록");
+    return data.items.map((it, i) => ({
+      id: `${idPrefix}_${i}`,
+      title: clean(it.title),
+      summary: clean(it.summary || ""),
+      link: it.link,
+      pubDate: "",
+      category,
+    }));
+  } catch (e) {
+    if (e instanceof StaleClientError) throw e;   // 화면에서 따로 안내
+    console.warn(`랭킹 로드 실패(${tab}) — 기존 방식으로 전환:`, e);
+    return fallback();
+  }
+};
+
+const fetchTopNewsRss = async () => {
   const url = getRssUrl("?hl=ko&gl=KR&ceid=KR:ko");
   try {
     const res = await fetch(url, { headers: AUTH_HEADERS });
@@ -86,13 +118,19 @@ export const fetchTopNews = async () => {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return parseRss(await res.text(), "헤드라인", "gnews_top");
   } catch (e) {
-    if (e instanceof StaleClientError) throw e;   // 화면에서 따로 안내
+    if (e instanceof StaleClientError) throw e;
     console.error("뉴스 로드 실패:", e);
     return [];
   }
 };
 
-export const fetchEntertainmentNews = async () => {
+export const fetchTopNews = () =>
+  fetchRanked("headline", "헤드라인", "rank_top", fetchTopNewsRss);
+
+export const fetchEntertainmentNews = () =>
+  fetchRanked("entertainment", "연예·문화", "rank_ent", fetchEntertainmentNewsSearch);
+
+const fetchEntertainmentNewsSearch = async () => {
   const queries = ["드라마", "영화", "가수", "탤런트", "배우", "예능"];
   const baseUrl = isNative
     ? "https://talk-spark-eta.vercel.app/api/naver-news"
@@ -124,7 +162,8 @@ export const fetchAiNews = async () => {
     const res = await fetch(url, { headers: AUTH_HEADERS });
     if (res.status === 403) throw new StaleClientError();
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return parseRss(await res.text(), "AI·기술", "gnews_ai");
+    // 중복·보도자료를 걷어내면 건수가 줄므로 넉넉히 파싱한 뒤 걸러서 10건을 채운다.
+    return refine(parseRss(await res.text(), "AI·기술", "gnews_ai", 40)).slice(0, 10);
   } catch (e) {
     if (e instanceof StaleClientError) throw e;
     console.error("AI 뉴스 로드 실패:", e);
@@ -208,7 +247,10 @@ export const fetchKeywordNews = async () => {
   return results.flat();
 };
 
-export const fetchWorldNews = async () => {
+export const fetchWorldNews = () =>
+  fetchRanked("world", "세계", "rank_world", fetchWorldNewsRss);
+
+const fetchWorldNewsRss = async () => {
   const url = getRssUrl("/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR:ko");
   try {
     const res = await fetch(url, { headers: AUTH_HEADERS });
