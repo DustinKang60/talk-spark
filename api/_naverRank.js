@@ -76,7 +76,10 @@ function similarity(a, b) {
 
 // 검색으로 모은 제목은 매체마다 표현 차이가 커서 Dice 만으로는 같은 사안을 못 묶는다.
 // (하영 친일 건이 네 줄로 남았다.) 그래서 '핵심 낱말이 얼마나 겹치는가'를 같이 본다.
-const PARTICLES = /(으로|에서|에게|부터|까지|이나|라며|라고|한다|했다|하는|이란|은|는|이|가|을|를|에|의|로|와|과|도|만)$/;
+// 긴 것부터 적어야 한다. '후손으로서'가 '후손'으로 줄지 않아
+// 같은 하영 기사가 두 줄로 남은 적이 있다.
+const PARTICLES =
+  /(에게서|으로서|이라며|으로|로서|에서|에게|부터|까지|이나|라며|라고|한다|했다|하는|이란|처럼|보다|조차|마저|밖에|은|는|이|가|을|를|에|의|로|와|과|도|만)$/;
 
 function tokens(title) {
   return new Set(
@@ -89,17 +92,33 @@ function tokens(title) {
   );
 }
 
+// 낱말이 같은지 볼 때 앞부분이 겹치면 같은 말로 친다.
+// 한국어는 어근에 말이 붙어 늘어나서, 같은 사안인데도 제목마다
+// '친일' / '친일논란' / '친일인명사전' 처럼 달리 쓴다. 정확히 같은 것만
+// 세면 하영 친일 건이 세 줄로 남았다.
+function tokenMatch(a, b) {
+  if (a === b) return true;
+  const short = a.length <= b.length ? a : b;
+  const long = a.length <= b.length ? b : a;
+  return short.length >= 2 && long.startsWith(short);
+}
+
 // 짧은 쪽 기준 겹침 비율. 제목 길이가 크게 달라도 같은 사안을 잡아낸다.
 function sameStory(titleA, titleB) {
   // 0.35로는 같은 교통사고를 다르게 쓴 두 제목이 안 묶였다
   // ("갑자기 덤프트럭이…대학생 3명 사망" / "영화촬영 후 귀가하던 예술대생 3명 사망").
   if (similarity(normalize(titleA), normalize(titleB)) >= 0.3) return true;
-  const A = tokens(titleA), B = tokens(titleB);
-  if (!A.size || !B.size) return false;
+  const A = [...tokens(titleA)], B = [...tokens(titleB)];
+  if (!A.length || !B.length) return false;
+  const used = new Set();
   let shared = 0;
-  for (const t of A) if (B.has(t)) shared++;
-  // 낱말 3개 이상이 겹치고, 짧은 쪽의 절반 이상을 덮으면 같은 사안으로 본다.
-  return shared >= 3 && shared / Math.min(A.size, B.size) >= 0.5;
+  for (const a of A) {
+    const hit = B.findIndex((b, i) => !used.has(i) && tokenMatch(a, b));
+    if (hit >= 0) { used.add(hit); shared++; }
+  }
+  // 낱말 3개 이상이 겹치고, 짧은 쪽의 35% 이상을 덮으면 같은 사안으로 본다.
+  // 0.4에서는 하영 친일 기사 두 건이 0.38로 한 끗 차이로 빠져나갔다.
+  return shared >= 3 && shared / Math.min(A.length, B.length) >= 0.35;
 }
 
 // 랭킹 목록: <a href="…/article/055/0001380084" class="list_title …">제목</a><span class="list_time">6시간전</span>

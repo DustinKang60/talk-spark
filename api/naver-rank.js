@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   try {
     const items =
       tab === "headline"
-        ? await buildHeadline(10)
+        ? await buildHeadline(20)   // 랭킹 풀이 넉넉해 20위까지도 3~5곳이 다룬 사안이다
         : tab === "entertainment"
           ? await buildEntertainment(10)
           : SECTIONS[tab]
